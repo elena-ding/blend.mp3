@@ -8,6 +8,7 @@
     position: absolute;
     top: 350px;
     left: 75px;
+    z-index: 2; /* ensure title sits above the video */
 }
 .home-bg {
     position: fixed;
@@ -41,6 +42,7 @@
     position: absolute;
     top: 475px;
     left: 75px;
+    z-index: 2; /* sit above the video */
 }
 
 .start-button {
@@ -59,6 +61,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
+    z-index: 2; /* bring button above video */
 }
 
 .start-button::after {
