@@ -1,0 +1,75 @@
+.home-title{
+    font-family: "Futura", sans-serif;
+    color: #ffffff;
+    letter-spacing: 0.001cm;
+    margin: 0;
+    padding: 0;
+    font-size: 90px;
+    position: absolute;
+    top: 350px;
+    left: 75px;
+}
+.home-bg {
+    position: fixed;
+    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    background-color: #000; /* fallback if video fails */
+}
+
+.home-bg video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+}
+.home-subtitle{
+    font-family: "Futura", sans-serif;
+    font-style: italic;
+    color: #ffffff;
+    letter-spacing: 0.025cm;
+    font-weight: 300;
+    margin: 0;
+    padding: 0;
+    font-size: 30px;
+    position: absolute;
+    top: 475px;
+    left: 75px;
+}
+
+.start-button {
+    font-family: "Futura", sans-serif;
+    color: #ffffff;
+    background-color: transparent;
+    border: 2px solid #ffffff;
+    border-radius: 50px;
+    padding: 10px 30px;
+    font-size: 24px;
+    letter-spacing: 0.015cm;
+    position: absolute;
+    top: 542px;
+    left: 75px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.start-button::after {
+    content: '→';
+    display: inline-block;
+    font-size: 1.1em;
+    margin-left: 0.2rem;
+    transition: transform 180ms ease;
+    transform: translateX(0);
+}
+
+.start-button:hover::after {
+    transform: scale(125%);
+}
