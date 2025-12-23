@@ -14,7 +14,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className="video-bg">
+          <video
+            autoPlay
+            loop
+            muted
+            src="/assets/gradient-home.mp4"
+          ></video>
+        </div>
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          {children}
+        </div>
+      </body>
     </html>
   )
 }
