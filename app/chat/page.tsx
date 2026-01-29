@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { useState } from 'react';
 import { motion } from 'framer-motion'
 
 import './chat.css'
@@ -32,12 +33,37 @@ function ChatDesc(): JSX.Element {
 }
 
 function ChatInput(): JSX.Element {
+  const [text, setText] = useState("");
+  const [pressedEnter, setPressedEnter] = useState(false);
+
+  async function handleSubmit(prompt: string) {
+    
+  }
+
   return (
     <div>
-      <input type="text" className="chat-input" placeholder="start typing. (eg. beat it by michael jackson)" />
-      <h1 className='upload-button'>
-        →
-      </h1>
+      <input 
+        type="text" 
+        className="chat-input" 
+        placeholder="start typing. (eg. beat it by michael jackson)" 
+        value={text}
+        onChange={(e) => setText(e.target.value)} 
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && text) handleSubmit(text);
+        }}
+      />
+      <button 
+        className='upload-button' 
+        onClick={() => {
+            setPressedEnter(true) // If user clicked enter button
+            if (text) { // If the user entered in text, submit the prompt
+              handleSubmit(text);
+            }
+          }
+        }
+      >
+        ↑
+      </button>
     </div>
   )
 }

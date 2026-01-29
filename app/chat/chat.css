@@ -70,14 +70,23 @@
 }
 
 .upload-button {
-    display: inline-block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: #000000;
     font-size: 30px;
     margin-left: 0.2rem;
     position: fixed;
-    top: 47.8%;
+    height: 52px;
+    width: 52px;
+    top: 49.05%;
     left: 77%;
     transition: transform 180ms ease;
     z-index: 2;
+    border: none;
+    border-radius: 50%;
+    background: rgb(192, 192, 192);
     cursor: pointer;
+    padding-bottom: 5.5px;
+    opacity: 1;
 }

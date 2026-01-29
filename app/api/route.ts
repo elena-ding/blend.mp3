@@ -9,7 +9,26 @@ export async function POST(request: Request ) {
 
     const response = await client.responses.create({ // Create response from gpt-5-mini model
         model: "gpt-5-mini",
-        input: prompt
+        input: [
+            {
+            role: "system",
+            content: [
+                {
+                type: "input_text",
+                text: "You suggest songs the user might enjoy based on the vibe, mood, genre, and artist of the song they enter."
+                }
+            ]
+            },
+            {
+            role: "user",
+            content: [
+                {
+                type: "input_text",
+                text: prompt
+                }
+            ]
+            }
+        ]
     });
 
     const first = response.output[0]; // Get first response object
