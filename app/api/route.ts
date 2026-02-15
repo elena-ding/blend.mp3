@@ -15,7 +15,7 @@ export async function POST(request: Request ) {
             content: [
                 {
                 type: "input_text",
-                text: "You suggest songs the user might enjoy based on the vibe, mood, genre, and artist of the song they enter."
+                text: "You suggest 5-7 songs the user might enjoy based on the vibe, mood, genre, and artist of the song they enter. Format your response with an intro line, then list the songs as a bullet point list, then end with a follow-up question."
                 }
             ]
             },
@@ -31,25 +31,17 @@ export async function POST(request: Request ) {
         ]
     });
 
-    const first = response.output[0]; // Get first response object
+    const text = response.output_text; // Get response object
 
-    if (first.type == "message") { // If response is a message
-        const content = first.content[0];
-        if (content.type === "output_text") { // If output is text
-            return new Response(
-                JSON.stringify({ result: content.text }), // Return the text
-            );
-        }
-        if (content.type === "refusal") { // If output is not text, return refusal message
-             return new Response(
-                JSON.stringify({ error: content.refusal }), 
-                { status: 400 }
-            );
-        }
+    if (!text) {
+        return new Response(
+            JSON.stringify({ error: "No output text returned" }),
+            { status: 500 }
+        );
     }
 
-    return new Response( // If response is not message, return error
-        JSON.stringify({ error: "Unexpected response type" }), 
-        { status: 500 }
+    return new Response(
+    JSON.stringify({ result: text }),
+    { status: 200 }
     );
 }

@@ -1,23 +1,57 @@
 'use client'
 
 import React from 'react'
-import { useState } from 'react';
-import { motion } from 'framer-motion'
+import ReactMarkdown from "react-markdown";
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion'
 
 import './chat.css'
+import Link from 'next/link';
+
+// NEW: Define message type for type safety
+type Message = {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 export default function App(): JSX.Element {
+  // NEW: Track if chat has started and messages
+  const [hasStarted, setHasStarted] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 0.5 }} 
-      transition={{ duration: 0.7, ease: "easeInOut" }}
-    >
-      <img src="/assets/black-screen.png" className='black-overlay'/>
-      <ChatDesc />
-      <ChatInput />
-      <Logo />
-    </motion.div>
+    <>
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 0.5 }} 
+        transition={{ duration: 0.7, ease: "easeInOut" }}
+      >
+        <img src="/assets/black-screen.png" className='black-overlay'/>
+        
+        {/* MODIFIED: Only show description when chat hasn't started */}
+        {!hasStarted && <ChatDesc />}
+        
+        {/* NEW: Show messages when chat has started */}
+        {hasStarted && (
+          <ChatMessages messages={messages} isLoading={isLoading} />
+        )}
+        
+        {/* MODIFIED: Pass state setters to ChatInput */}
+        <ChatInput 
+          hasStarted={hasStarted}
+          setHasStarted={setHasStarted}
+          messages={messages}
+          setMessages={setMessages}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+        />
+        
+        <Link href="/">
+          <Logo />
+        </Link>
+      </motion.div>
+    </>
   )
 }
 
@@ -32,49 +66,174 @@ function ChatDesc(): JSX.Element {
   )
 }
 
-function ChatInput(): JSX.Element {
+// NEW: Component to display chat messages
+function ChatMessages({ messages, isLoading }: { messages: Message[], isLoading: boolean }): JSX.Element {
+  // NEW: Create a ref for the messages container
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // NEW: Scroll to bottom whenever messages or loading state changes
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  return (
+    <div className="chat-messages-container">
+      <AnimatePresence>
+        {messages.map((message, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`message ${message.role}`}
+          >
+            <div className="message-content">
+              <ReactMarkdown>
+                {message.content}
+              </ReactMarkdown>
+            </div>
+          </motion.div>
+        ))}
+        
+        {/* Show loading indicator while waiting for response */}
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="message assistant"
+          >
+            <div className="message-content loading">
+              <span className="loading-dot">.</span>
+              <span className="loading-dot">.</span>
+              <span className="loading-dot">.</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <div ref={messagesEndRef} />
+    </div>
+  )
+}
+
+// MODIFIED: Added props to manage state
+function ChatInput({ 
+  hasStarted, 
+  setHasStarted, 
+  messages, 
+  setMessages,
+  isLoading,
+  setIsLoading
+}: { 
+  hasStarted: boolean;
+  setHasStarted: (value: boolean) => void;
+  messages: Message[];
+  setMessages: (messages: Message[]) => void;
+  isLoading: boolean;
+  setIsLoading: (value: boolean) => void;
+}): JSX.Element {
   const [text, setText] = useState("");
-  const [pressedEnter, setPressedEnter] = useState(false);
 
   async function handleSubmit(prompt: string) {
+    // NEW: Don't submit if already loading
+    if (isLoading) return;
     
+    // NEW: Mark chat as started
+    setHasStarted(true);
+    
+    // NEW: Add user message immediately
+    const userMessage: Message = { role: 'user', content: prompt };
+    setMessages([...messages, userMessage]);
+    
+    // NEW: Clear input and set loading
+    setText("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: prompt }),
+      });
+
+      const data = await response.json();
+      
+      // NEW: Add assistant response
+      if (data.result) {
+        console.log("Response from API:", data);
+        const assistantMessage: Message = { 
+          role: 'assistant', 
+          content: data.result // Adjust this based on your API response structure
+        };
+        setMessages([...messages, userMessage, assistantMessage]);
+      } else if (data.error) {
+        console.error("Error from API:", data.error);
+        const errorMessage: Message = { 
+          role: 'assistant', 
+          content: "Sorry, there was an error processing your request."
+        };
+        setMessages([...messages, userMessage, errorMessage]);
+      }
+    } catch (error) {
+      console.error("Connection failed:", error);
+      // NEW: Show error message
+      const errorMessage: Message = { 
+        role: 'assistant', 
+        content: "Sorry, connection failed. Please try again."
+      };
+      setMessages([...messages, userMessage, errorMessage]);
+    } finally {
+      // NEW: Stop loading
+      setIsLoading(false);
+    }
   }
 
   return (
     <div>
       <input 
         type="text" 
-        className="chat-input" 
+        // MODIFIED: Change class based on whether chat has started
+        className={hasStarted ? "chat-input-bottom" : "chat-input"}
         placeholder="start typing. (eg. beat it by michael jackson)" 
         value={text}
         onChange={(e) => setText(e.target.value)} 
         onKeyDown={(e) => {
-          if (e.key === "Enter" && text) handleSubmit(text);
+          if (e.key === "Enter" && text && !isLoading) handleSubmit(text);
         }}
+        disabled={isLoading} // NEW: Disable input while loading
       />
-      <button 
-        className='upload-button' 
+      <motion.button 
+        // MODIFIED: Change class based on whether chat has started
+        className={hasStarted ? 'upload-button-bottom' : 'upload-button'}
+        whileHover={{
+          filter: "brightness(0.8)",
+          zIndex: 1
+        }}
         onClick={() => {
-            setPressedEnter(true) // If user clicked enter button
-            if (text) { // If the user entered in text, submit the prompt
+            if (text && !isLoading) {
               handleSubmit(text);
             }
           }
         }
+        disabled={isLoading} // NEW: Disable button while loading
       >
         ↑
-      </button>
+      </motion.button>
     </div>
   )
 }
 
 function Logo(): JSX.Element {
   return (
-    <div className="logo-container">
+    <motion.button 
+      className="logo-container"
+      whileHover={{ cursor: "pointer" }}
+    >
       <motion.img src="/assets/cd.png" style={{width: "35px", height: "35px"}} animate={{ rotate: 360 }} transition={{repeat: Infinity, duration: 7, ease: "linear"}} />
       <h2 className="logo-text">
         blend.mp3
       </h2>
-    </div>
+    </motion.button>
   )
 }
