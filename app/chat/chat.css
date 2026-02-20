@@ -112,7 +112,6 @@
     opacity: 0;
 }
 
-/* NEW: Container for chat messages - positioned in center-right */
 .chat-messages-container {
     position: fixed;
     right: 50%;
@@ -126,26 +125,23 @@
     gap: 30px;
     padding: 20px;
     z-index: 3;
-    scrollbar-width: none; /* NEW: For Firefox */
-    -ms-overflow-style: none; /* NEW: For Internet Explorer and Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .chat-messages-container::-webkit-scrollbar {
     display: none;
 }
 
-/* NEW: Individual message styling */
 .message {
     display: flex;
     width: 100%;
 }
 
-/* NEW: User messages aligned to the right */
 .message.user {
     justify-content: flex-end;
 }
 
-/* NEW: Assistant messages aligned to the left */
 .message.assistant {
     justify-content: flex-start;
 }
@@ -192,14 +188,13 @@
     }
 }
 
-/* NEW: Input positioned at bottom after chat starts */
 .chat-input-bottom {
     font-family: "Futura", sans-serif;
     font-size: 20px;
     position: fixed;
     width: 60%;
     height: 3%;
-    bottom: 5%; /* Changed from top to bottom */
+    bottom: 5%;
     left: 50%;
     padding: 20px;
     border-radius: 50px;
@@ -207,10 +202,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.5s ease; /* Smooth transition */
+    transition: all 0.5s ease;
 }
 
-/* NEW: Button positioned at bottom after chat starts */
 .upload-button-bottom {
     display: flex;
     justify-content: center;
@@ -221,9 +215,9 @@
     position: fixed;
     height: 52px;
     width: 52px;
-    bottom: 5.95%; /* Changed from top to bottom */
+    bottom: 5.95%;
     left: 77%;
-    transition: all 0.5s ease; /* Smooth transition */
+    transition: all 0.5s ease;
     border: none;
     border-radius: 50%;
     background: rgb(192, 192, 192);

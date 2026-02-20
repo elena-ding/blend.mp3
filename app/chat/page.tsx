@@ -115,7 +115,6 @@ function ChatMessages({ messages, isLoading }: { messages: Message[], isLoading:
   )
 }
 
-// MODIFIED: Added props to manage state
 function ChatInput({ 
   hasStarted, 
   setHasStarted, 
@@ -134,17 +133,17 @@ function ChatInput({
   const [text, setText] = useState("");
 
   async function handleSubmit(prompt: string) {
-    // NEW: Don't submit if already loading
+    // Don't submit if already loading
     if (isLoading) return;
     
-    // NEW: Mark chat as started
+    // Mark chat as started
     setHasStarted(true);
     
-    // NEW: Add user message immediately
+    // Add user message immediately
     const userMessage: Message = { role: 'user', content: prompt };
     setMessages([...messages, userMessage]);
     
-    // NEW: Clear input and set loading
+    // Clear input and set loading
     setText("");
     setIsLoading(true);
 
@@ -159,12 +158,12 @@ function ChatInput({
 
       const data = await response.json();
       
-      // NEW: Add assistant response
+      // Add assistant response
       if (data.result) {
         console.log("Response from API:", data);
         const assistantMessage: Message = { 
           role: 'assistant', 
-          content: data.result // Adjust this based on your API response structure
+          content: data.result
         };
         setMessages([...messages, userMessage, assistantMessage]);
       } else if (data.error) {
@@ -177,14 +176,12 @@ function ChatInput({
       }
     } catch (error) {
       console.error("Connection failed:", error);
-      // NEW: Show error message
       const errorMessage: Message = { 
         role: 'assistant', 
         content: "Sorry, connection failed. Please try again."
       };
       setMessages([...messages, userMessage, errorMessage]);
     } finally {
-      // NEW: Stop loading
       setIsLoading(false);
     }
   }
@@ -193,7 +190,6 @@ function ChatInput({
     <div>
       <input 
         type="text" 
-        // MODIFIED: Change class based on whether chat has started
         className={hasStarted ? "chat-input-bottom" : "chat-input"}
         placeholder="start typing. (eg. beat it by michael jackson)" 
         value={text}
@@ -201,10 +197,9 @@ function ChatInput({
         onKeyDown={(e) => {
           if (e.key === "Enter" && text && !isLoading) handleSubmit(text);
         }}
-        disabled={isLoading} // NEW: Disable input while loading
+        disabled={isLoading} // Disable input while loading
       />
       <motion.button 
-        // MODIFIED: Change class based on whether chat has started
         className={hasStarted ? 'upload-button-bottom' : 'upload-button'}
         whileHover={{
           filter: "brightness(0.8)",
@@ -216,7 +211,7 @@ function ChatInput({
             }
           }
         }
-        disabled={isLoading} // NEW: Disable button while loading
+        disabled={isLoading}
       >
         ↑
       </motion.button>
