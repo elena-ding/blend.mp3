@@ -8,14 +8,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import './chat.css'
 import Link from 'next/link';
 
-// NEW: Define message type for type safety
 type Message = {
   role: 'user' | 'assistant';
   content: string;
 }
 
 export default function App(): JSX.Element {
-  // NEW: Track if chat has started and messages
   const [hasStarted, setHasStarted] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,15 +27,12 @@ export default function App(): JSX.Element {
       >
         <img src="/assets/black-screen.png" className='black-overlay'/>
         
-        {/* MODIFIED: Only show description when chat hasn't started */}
         {!hasStarted && <ChatDesc />}
         
-        {/* NEW: Show messages when chat has started */}
         {hasStarted && (
           <ChatMessages messages={messages} isLoading={isLoading} />
         )}
         
-        {/* MODIFIED: Pass state setters to ChatInput */}
         <ChatInput 
           hasStarted={hasStarted}
           setHasStarted={setHasStarted}
@@ -66,12 +61,11 @@ function ChatDesc(): JSX.Element {
   )
 }
 
-// NEW: Component to display chat messages
+// Component to display chat messages
 function ChatMessages({ messages, isLoading }: { messages: Message[], isLoading: boolean }): JSX.Element {
-  // NEW: Create a ref for the messages container
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // NEW: Scroll to bottom whenever messages or loading state changes
+  // Scroll to bottom whenever messages or loading state changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
@@ -95,7 +89,6 @@ function ChatMessages({ messages, isLoading }: { messages: Message[], isLoading:
           </motion.div>
         ))}
         
-        {/* Show loading indicator while waiting for response */}
         {isLoading && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
