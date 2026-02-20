@@ -96,6 +96,7 @@ function ChatMessages({ messages, isLoading }: { messages: Message[], isLoading:
             className="message assistant"
           >
             <div className="message-content loading">
+              <span>thinking</span>
               <span className="loading-dot">.</span>
               <span className="loading-dot">.</span>
               <span className="loading-dot">.</span>
