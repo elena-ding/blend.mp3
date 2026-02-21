@@ -220,16 +220,16 @@ function ChatInput({
         const chatIndex = history.findIndex((c: any) => c.chatId === currentChatId);
 
         if (chatIndex !== -1) {
-          // chat already exists, append to it
+          // Chat already exists, append to it
           history[chatIndex].messages.push({ user: userMessage.content, response: assistantMessage.content });
         } else {
-          // first message in this chat
+          // First message in this chat
           history.push({
             chatId: currentChatId,
-            title: userMessage.content, // first prompt becomes the title
+            title: userMessage.content, // First prompt becomes the title
             messages: [{ user: userMessage.content, response: assistantMessage.content }]
           });
-          refreshHistory(); // trigger history panel to refresh with new chat session
+          refreshHistory(); // Trigger history panel to refresh with new chat session
         }
         localStorage.setItem("chatHistory", JSON.stringify(history));
       } else if (data.error) {
