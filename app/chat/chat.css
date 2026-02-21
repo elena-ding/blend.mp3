@@ -34,20 +34,23 @@
 
 .logo-container {
     position: fixed;
+    top: 10px;
+    left: 50px;
     display: flex;
     flex-direction: row;
     gap: 8px;
-    text-align: center;
     align-items: center;
     background: none;
     border: none;
     z-index: 200;
+    margin: 0;
+    height: 40px;
 }
 
 .logo-text {
     font-family: "Futura", sans-serif;
     color: #ffffff;
-    letter-spacing: 0.02cm;
+    letter-spacing: 0.01cm;
     margin: 0;
     padding: 0;
     font-size: 20px;
@@ -209,7 +212,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.5s ease;
 }
 
 .upload-button-bottom {
@@ -235,17 +237,22 @@
 
 .history-toggle {
     position: fixed;
-    top: 52px; /* sits just below the blend.mp3 logo */
-    left: 11px;
+    top: 10px;
+    left: 7px;
     z-index: 100;
     background: none;
     border: none;
     color: #ffffff;
-    opacity: 0.5;
+    opacity: 0.8;
     font-size: 28px;
     cursor: pointer;
     padding: 4px 6px;
     border-radius: 6px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .history-panel {
@@ -268,10 +275,10 @@
     font-family: "Futura", sans-serif;
     font-weight: 100;
     color: #ffffff;
-    font-size: 18px;
+    font-size: 20px;
     letter-spacing: 0.02cm;
     margin: 8px 0 8px 0;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 .history-list {
@@ -284,4 +291,43 @@
 
 .history-list::-webkit-scrollbar {
     display: none;
+}
+
+.history-item {
+    font-family: "Futura", sans-serif;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.144);
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.262);
+    color: #ffffff;
+}
+
+.new-chat-button {
+    font-family: "Futura", sans-serif;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    background: none;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 20px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.new-chat-button:hover {
+    background: rgba(255, 255, 255, 0.262);
+    color: #ffffff;
 }

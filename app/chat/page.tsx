@@ -17,7 +17,30 @@ export default function App(): JSX.Element {
   const [hasStarted, setHasStarted] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-    const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [currentChatId, setCurrentChatId] = useState<number>(Date.now());
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  function newChat() {
+    setMessages([]);
+    setHasStarted(false);
+    setCurrentChatId(Date.now());
+  }
+
+  function loadChat(chatId: number) {
+    const existing = localStorage.getItem("chatHistory");
+    const history = existing ? JSON.parse(existing) : [];
+    const chat = history.find((c: any) => c.chatId === chatId);
+    if (chat) {
+      const loadedMessages: Message[] = chat.messages.flatMap((m: any) => [
+        { role: 'user', content: m.user},
+        { role: 'assistant', content: m.response}
+      ]);
+      setMessages(loadedMessages);
+      setHasStarted(true);
+      setCurrentChatId(chatId);
+    }
+  }
 
   return (
     <>
@@ -42,12 +65,20 @@ export default function App(): JSX.Element {
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           historyOpen={historyOpen}
+          currentChatId={currentChatId}
+          refreshHistory={() => setRefreshKey(k => k + 1)}
         />
         
         <Link href="/">
           <Logo />
         </Link>
-        <HistoryPanel isOpen={historyOpen} setIsOpen={setHistoryOpen} />
+        <HistoryPanel 
+          isOpen={historyOpen} 
+          setIsOpen={setHistoryOpen} 
+          onNewChat={newChat} 
+          refreshKey={refreshKey} 
+          onLoadChat={loadChat}
+        />
       </motion.div>
     </>
   )
@@ -57,6 +88,7 @@ function ChatDesc({ historyOpen }: { historyOpen: boolean }): JSX.Element {
   return (
     <motion.div
       className="chat-desc-container"
+      initial={{ left: historyOpen ? 'calc(50% + 130px)' : '50%' }}
       animate={{ left: historyOpen ? 'calc(50% + 130px)' : '50%' }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
@@ -80,6 +112,7 @@ function ChatMessages({ messages, isLoading, historyOpen }: { messages: Message[
   return (
     <motion.div
       className="chat-messages-container"
+      initial={{ paddingLeft: historyOpen ? '260px' : '0px' }}
       animate={{ paddingLeft: historyOpen ? '260px' : '0px' }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
     >
@@ -127,7 +160,9 @@ function ChatInput({
   setMessages,
   isLoading,
   setIsLoading,
-  historyOpen
+  historyOpen,
+  currentChatId,
+  refreshHistory
 }: { 
   hasStarted: boolean;
   setHasStarted: (value: boolean) => void;
@@ -136,6 +171,8 @@ function ChatInput({
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;
   historyOpen: boolean;
+  currentChatId: number;
+  refreshHistory: () => void;
 }): JSX.Element {
   const [text, setText] = useState("");
 
@@ -173,6 +210,28 @@ function ChatInput({
           content: data.result
         };
         setMessages([...messages, userMessage, assistantMessage]);
+        const session = {
+          chatId: Date.now(),
+          user: userMessage.content,
+          response: assistantMessage.content
+        };
+        const existing = localStorage.getItem("chatHistory");
+        const history = existing ? JSON.parse(existing) : [];
+        const chatIndex = history.findIndex((c: any) => c.chatId === currentChatId);
+
+        if (chatIndex !== -1) {
+          // chat already exists, append to it
+          history[chatIndex].messages.push({ user: userMessage.content, response: assistantMessage.content });
+        } else {
+          // first message in this chat
+          history.push({
+            chatId: currentChatId,
+            title: userMessage.content, // first prompt becomes the title
+            messages: [{ user: userMessage.content, response: assistantMessage.content }]
+          });
+          refreshHistory(); // trigger history panel to refresh with new chat session
+        }
+        localStorage.setItem("chatHistory", JSON.stringify(history));
       } else if (data.error) {
         console.error("Error from API:", data.error);
         const errorMessage: Message = { 
@@ -205,6 +264,7 @@ function ChatInput({
           if (e.key === "Enter" && text && !isLoading) handleSubmit(text);
         }}
         disabled={isLoading}
+        initial={{ left: historyOpen ? 'calc(50% + 130px)' : '50%' }}
         animate={{ left: historyOpen ? 'calc(50% + 130px)' : '50%' }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
       />
@@ -213,6 +273,7 @@ function ChatInput({
         whileHover={{ filter: "brightness(0.8)", zIndex: 1 }}
         onClick={() => { if (text && !isLoading) handleSubmit(text); }}
         disabled={isLoading}
+        initial={{ left: historyOpen ? 'calc(77% + 130px)' : '77%' }}
         animate={{ left: historyOpen ? 'calc(77% + 130px)' : '77%' }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
@@ -222,7 +283,15 @@ function ChatInput({
   )
 }
 
-function HistoryPanel({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (v: boolean) => void }): JSX.Element {
+function HistoryPanel({ isOpen, setIsOpen, onNewChat, refreshKey, onLoadChat }: { isOpen: boolean, setIsOpen: (v: boolean) => void, onNewChat: () => void, refreshKey: number, onLoadChat: (chatId: number) => void }): JSX.Element {
+  const [history, setHistory] = useState<{ chatId: number, title: string, messages: {user: string, response: string}[] }[]>([]);
+
+  useEffect(() => {
+    const existing = localStorage.getItem("chatHistory");
+    const history = existing ? JSON.parse(existing) : [];
+    setHistory(history);
+  }, [isOpen, refreshKey]);
+
   return (
     <>
       <motion.button // Toggle button
@@ -242,9 +311,19 @@ function HistoryPanel({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (v: b
             exit={{ x: '-100%' }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
           >
+            <motion.button
+              className="new-chat-button"
+              onClick={() => { onNewChat(); }}
+            >
+              + new chat
+            </motion.button>
             <h3 className="history-title">history</h3>
             <div className="history-list">
-              {/* your localStorage entries go here */}
+              {history.map((session, index) => (
+                <div key={index} className="history-item" onClick={() => onLoadChat(session.chatId)}>
+                  {session.title}
+                </div>
+              ))}
             </div>
           </motion.div>
         )}
