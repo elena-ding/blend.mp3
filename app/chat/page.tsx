@@ -17,6 +17,7 @@ export default function App(): JSX.Element {
   const [hasStarted, setHasStarted] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+    const [historyOpen, setHistoryOpen] = useState(false);
 
   return (
     <>
@@ -27,10 +28,10 @@ export default function App(): JSX.Element {
       >
         <img src="/assets/black-screen.png" className='black-overlay'/>
         
-        {!hasStarted && <ChatDesc />}
+        {!hasStarted && <ChatDesc historyOpen={historyOpen} />}
         
         {hasStarted && (
-          <ChatMessages messages={messages} isLoading={isLoading} />
+          <ChatMessages messages={messages} isLoading={isLoading} historyOpen={historyOpen} />
         )}
         
         <ChatInput 
@@ -40,29 +41,35 @@ export default function App(): JSX.Element {
           setMessages={setMessages}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          historyOpen={historyOpen}
         />
         
         <Link href="/">
           <Logo />
         </Link>
+        <HistoryPanel isOpen={historyOpen} setIsOpen={setHistoryOpen} />
       </motion.div>
     </>
   )
 }
 
-function ChatDesc(): JSX.Element {
+function ChatDesc({ historyOpen }: { historyOpen: boolean }): JSX.Element {
   return (
-    <div className="chat-desc-container">
+    <motion.div
+      className="chat-desc-container"
+      animate={{ left: historyOpen ? 'calc(50% + 130px)' : '50%' }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
       <h2 className="chat-desc-text">
         enter a song and artist to get recommendations. <br />
         for more personalized results, tell us what you like about the song.
       </h2>
-    </div>
+    </motion.div>
   )
 }
 
 // Component to display chat messages
-function ChatMessages({ messages, isLoading }: { messages: Message[], isLoading: boolean }): JSX.Element {
+function ChatMessages({ messages, isLoading, historyOpen }: { messages: Message[], isLoading: boolean, historyOpen: boolean }): JSX.Element {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom whenever messages or loading state changes
@@ -71,7 +78,11 @@ function ChatMessages({ messages, isLoading }: { messages: Message[], isLoading:
   }, [messages, isLoading]);
 
   return (
-    <div className="chat-messages-container">
+    <motion.div
+      className="chat-messages-container"
+      animate={{ paddingLeft: historyOpen ? '260px' : '0px' }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    >
       <AnimatePresence>
         {messages.map((message, index) => (
           <motion.div
@@ -105,7 +116,7 @@ function ChatMessages({ messages, isLoading }: { messages: Message[], isLoading:
         )}
       </AnimatePresence>
       <div ref={messagesEndRef} />
-    </div>
+    </motion.div>
   )
 }
 
@@ -115,7 +126,8 @@ function ChatInput({
   messages, 
   setMessages,
   isLoading,
-  setIsLoading
+  setIsLoading,
+  historyOpen
 }: { 
   hasStarted: boolean;
   setHasStarted: (value: boolean) => void;
@@ -123,6 +135,7 @@ function ChatInput({
   setMessages: (messages: Message[]) => void;
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;
+  historyOpen: boolean;
 }): JSX.Element {
   const [text, setText] = useState("");
 
@@ -181,8 +194,8 @@ function ChatInput({
   }
 
   return (
-    <div>
-      <input 
+    <>
+      <motion.input 
         type="text" 
         className={hasStarted ? "chat-input-bottom" : "chat-input"}
         placeholder="start typing. (eg. beat it by michael jackson)" 
@@ -191,26 +204,53 @@ function ChatInput({
         onKeyDown={(e) => {
           if (e.key === "Enter" && text && !isLoading) handleSubmit(text);
         }}
-        disabled={isLoading} // Disable input while loading
+        disabled={isLoading}
+        animate={{ left: historyOpen ? 'calc(50% + 130px)' : '50%' }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
       />
       <motion.button 
         className={hasStarted ? 'upload-button-bottom' : 'upload-button'}
-        whileHover={{
-          filter: "brightness(0.8)",
-          zIndex: 1
-        }}
-        onClick={() => {
-            if (text && !isLoading) {
-              handleSubmit(text);
-            }
-          }
-        }
+        whileHover={{ filter: "brightness(0.8)", zIndex: 1 }}
+        onClick={() => { if (text && !isLoading) handleSubmit(text); }}
         disabled={isLoading}
+        animate={{ left: historyOpen ? 'calc(77% + 130px)' : '77%' }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
         ↑
       </motion.button>
-    </div>
+    </>
   )
+}
+
+function HistoryPanel({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (v: boolean) => void }): JSX.Element {
+  return (
+    <>
+      <motion.button // Toggle button
+        className="history-toggle"
+        onClick={() => setIsOpen(!isOpen)}
+        whileHover={{ filter: "brightness(0.7)" }}
+      >
+        {isOpen ? '✕' : '☰'}
+      </motion.button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="history-panel"
+            initial={{ x: '-100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '-100%' }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          >
+            <h3 className="history-title">history</h3>
+            <div className="history-list">
+              {/* your localStorage entries go here */}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
 }
 
 function Logo(): JSX.Element {

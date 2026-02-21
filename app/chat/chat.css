@@ -24,11 +24,12 @@
 
 .chat-desc-container {
     position: fixed;
-    width: 100%;
     top: 39%;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    justify-content: center;
     align-items: center;
+    white-space: nowrap;
 }
 
 .logo-container {
@@ -40,6 +41,7 @@
     align-items: center;
     background: none;
     border: none;
+    z-index: 200;
 }
 
 .logo-text {
@@ -229,4 +231,57 @@
     cursor: pointer;
     padding-bottom: 5.5px;
     opacity: 1;
+}
+
+.history-toggle {
+    position: fixed;
+    top: 52px; /* sits just below the blend.mp3 logo */
+    left: 11px;
+    z-index: 100;
+    background: none;
+    border: none;
+    color: #ffffff;
+    opacity: 0.5;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+
+.history-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    background: rgba(188, 29, 29, 0.58);
+    backdrop-filter: blur(12px);
+    z-index: 50;
+    padding: 90px 16px 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.history-title {
+    font-family: "Futura", sans-serif;
+    font-weight: 100;
+    color: #ffffff;
+    font-size: 18px;
+    letter-spacing: 0.02cm;
+    margin: 8px 0 8px 0;
+    opacity: 0.6;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.history-list::-webkit-scrollbar {
+    display: none;
 }
