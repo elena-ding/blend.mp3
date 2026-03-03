@@ -1,5 +1,6 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  basePath: '/blend.mp3',
-  assetPrefix: '/blend.mp3',
+  // remove output: 'export'
 };
+
+module.exports = nextConfig;
