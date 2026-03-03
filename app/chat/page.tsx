@@ -78,6 +78,7 @@ export default function App(): JSX.Element {
           onNewChat={newChat} 
           refreshKey={refreshKey} 
           onLoadChat={loadChat}
+          isLoading={isLoading}
         />
       </motion.div>
     </>
@@ -283,7 +284,7 @@ function ChatInput({
   )
 }
 
-function HistoryPanel({ isOpen, setIsOpen, onNewChat, refreshKey, onLoadChat }: { isOpen: boolean, setIsOpen: (v: boolean) => void, onNewChat: () => void, refreshKey: number, onLoadChat: (chatId: number) => void }): JSX.Element {
+function HistoryPanel({ isOpen, setIsOpen, onNewChat, refreshKey, onLoadChat, isLoading }: { isOpen: boolean, setIsOpen: (v: boolean) => void, onNewChat: () => void, refreshKey: number, onLoadChat: (chatId: number) => void, isLoading: boolean }): JSX.Element {
   const [history, setHistory] = useState<{ chatId: number, title: string, messages: {user: string, response: string}[] }[]>([]);
 
   useEffect(() => {
@@ -313,14 +314,20 @@ function HistoryPanel({ isOpen, setIsOpen, onNewChat, refreshKey, onLoadChat }: 
           >
             <motion.button
               className="new-chat-button"
-              onClick={() => { onNewChat(); }}
+              onClick={!isLoading ? () => { onNewChat();} : undefined}
+              style={{ opacity: isLoading ? 0.5 : 1, cursor: isLoading ? 'default' : 'pointer' }}
             >
               + new chat
             </motion.button>
             <h3 className="history-title">history</h3>
-            <div className="history-list">
+            <div className="history-list" style={{ opacity: isLoading ? 0.5 : 1 }}>
               {history.map((session, index) => (
-                <div key={index} className="history-item" onClick={() => onLoadChat(session.chatId)}>
+                <div 
+                  key={index} 
+                  className="history-item" 
+                  onClick={!isLoading ? () => onLoadChat(session.chatId) : undefined} 
+                  style={{ cursor: isLoading ? 'default' : 'pointer' }}
+                >
                   {session.title}
                 </div>
               ))}
