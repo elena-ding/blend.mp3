@@ -25,4 +25,11 @@ Blend.mp3 is an AI-powered music discovery app that transforms a simple song or 
 
 ---
 
+## 📊 Data Sources
+- **AI Integration:** Utilizes the OpenAI API to generate context-aware music recommendations through custom prompt engineering.  
+- **User Input Data:** Processes user-provided songs, artists, and conversational context to refine personalized suggestions.
+- **Media Assets:** Utilizes publicly available media content for an appealing website visual.
+
+---
+
 Blend.mp3 is a focused exploration of AI-driven personalization. It combines conversational interfaces, thoughtful prompt design, and modern frontend engineering to reimagine music discovery.
