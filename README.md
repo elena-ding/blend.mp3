@@ -7,20 +7,11 @@ Blend.mp3 is an AI-powered music discovery app that transforms a simple song or 
 
 ## 🚀 Features
 
-### 🎵 Conversational Music Discovery  
-Enter a song, artist, or mood and receive intelligently generated track suggestions powered by LLM integration.
-
-### 🧠 Context-Aware Prompt Engineering  
-Custom-designed prompts guide the model to generate nuanced recommendations that reflect tone, genre blending, and stylistic details.
-
-### 💾 Persistent Chat History  
-Client-side state management preserves conversations and recommendations across sessions.
-
-### 🔄 Session Continuity  
-Users can revisit previous inputs and refine their exploration without losing context.
-
-### 📱 Responsive, Type-Safe Interface  
-Built with a strongly typed frontend for reliability and optimized for both desktop and mobile devices.
+- **Conversational Music Discovery**: Enter a song, artist, or mood and receive intelligently generated track suggestions powered by LLM integration.
+- **Context-Aware Prompt Engineering**: Custom-designed prompts guide the model to generate nuanced recommendations that reflect tone, genre blending, and stylistic details.
+- **Persistent Chat History**: Client-side state management preserves conversations and recommendations across sessions.
+- **Session Continuity**: Users can revisit previous inputs and refine their exploration without losing context.
+- **Responsive, Type-Safe Interface**: Built with a strongly typed frontend for reliability and optimized for both desktop and mobile devices.
 
 ---
 
