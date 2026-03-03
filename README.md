@@ -1,4 +1,5 @@
 # 🎧 blend.mp3  
+**Live Site:** https://blend-mp3.vercel.app/
 **Status:** Completed  
 
 Blend.mp3 is an AI-powered music discovery app that transforms a simple song or artist input into curated, personalized track recommendations. Rather than relying purely on traditional recommendation algorithms, the app leverages large language models to interpret musical taste contextually, capturing vibe, genre overlap, production style, and listening intent.
